@@ -1,0 +1,8 @@
+{
+  "title": "Проверка сетевого соединения",
+  "description": "На сервере периодически возникают ошибки подключения.",
+  "category": "network",
+  "priority": 3,
+  "reporter_ip": "192.0.2.10",
+  "attachment_key": "log"
+}
