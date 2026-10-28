@@ -4,6 +4,7 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 
@@ -58,7 +59,7 @@ class TestV06(unittest.TestCase):
         value = "' OR 1=1 --"
         self.repo.add(request(value))
         self.repo.add(request())
-        with self.repo.connect() as conn:
+        with closing(self.repo.connect()) as conn:
             count = conn.execute(
                 "SELECT count(*) FROM requests WHERE title = ?", (value,)
             ).fetchone()[0]
