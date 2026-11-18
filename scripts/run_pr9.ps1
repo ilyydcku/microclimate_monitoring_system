@@ -18,17 +18,31 @@ $repo = (Get-Location).Path.TrimEnd('\')
 $fullSecretDir = [IO.Path]::GetFullPath($pr9Dir)
 if ($fullSecretDir.Equals($repo, [StringComparison]::OrdinalIgnoreCase) -or $fullSecretDir.StartsWith($repo + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Secret directory must be outside Git.' }
 New-Item -ItemType Directory -Path $pr9Dir -Force | Out-Null
-# Restrict this dedicated lab directory to the current Windows account.
+# Modify only the DACL, without requiring SeSecurityPrivilege (SACL).
 $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
-$acl = Get-Acl -LiteralPath $pr9Dir
-$acl.SetAccessRuleProtection($true, $false)
-foreach ($rule in @($acl.Access)) { [void]$acl.RemoveAccessRuleAll($rule) }
-$full = [System.Security.AccessControl.FileSystemRights]::FullControl
-$allow = [System.Security.AccessControl.AccessControlType]::Allow
-$inherit = [System.Security.AccessControl.InheritanceFlags]'ContainerInherit,ObjectInherit'
-$prop = [System.Security.AccessControl.PropagationFlags]::None
-$acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($sid, $full, $inherit, $prop, $allow))
-Set-Acl -LiteralPath $pr9Dir -AclObject $acl
+function Protect-LabPath([string]$path, [bool]$isDirectory) {
+    $rights = if ($isDirectory) { '(OI)(CI)F' } else { 'F' }
+    $grant = '*' + $sid.Value + ':' + $rights
+    & icacls.exe $path /grant:r $grant | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to grant access to the current account.' }
+    & icacls.exe $path /inheritance:r | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to remove inherited permissions.' }
+    $acl = Get-Acl -LiteralPath $path
+    $other = @($acl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier]) |
+        Where-Object { $_.IdentityReference.Value -ne $sid.Value } |
+        ForEach-Object { $_.IdentityReference.Value } | Sort-Object -Unique)
+    foreach ($otherSid in $other) {
+        & icacls.exe $path /remove ('*' + $otherSid) | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to restrict access to the lab path.' }
+    }
+    $acl = Get-Acl -LiteralPath $path
+    $rules = @($acl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier]))
+    if (-not $acl.AreAccessRulesProtected -or $rules.Count -eq 0 -or
+        @($rules | Where-Object { $_.IdentityReference.Value -ne $sid.Value -or $_.AccessControlType -ne 'Allow' }).Count -ne 0) {
+        throw 'Lab path ACL verification failed.'
+    }
+}
+Protect-LabPath $pr9Dir $true
 $pr9KeyFile = Join-Path $pr9Dir 'data-key.hex'
 if (-not (Test-Path -LiteralPath $pr9KeyFile)) {
     @'
@@ -41,11 +55,7 @@ with Path(sys.argv[1]).open("x", encoding="ascii") as output:
 '@ | & $python - $pr9KeyFile
     if ($LASTEXITCODE -ne 0) { throw 'Key creation failed.' }
 }
-$keyAcl = Get-Acl -LiteralPath $pr9KeyFile
-$keyAcl.SetAccessRuleProtection($true, $false)
-foreach ($rule in @($keyAcl.Access)) { [void]$keyAcl.RemoveAccessRuleAll($rule) }
-$keyAcl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($sid, $full, $allow))
-Set-Acl -LiteralPath $pr9KeyFile -AclObject $keyAcl
+Protect-LabPath $pr9KeyFile $false
 $env:PR9_DATA_KEY_HEX = [IO.File]::ReadAllText($pr9KeyFile).Trim()
 $runDir = Join-Path $pr9Dir ('run-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $runDir | Out-Null
