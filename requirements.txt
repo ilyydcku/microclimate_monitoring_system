@@ -4,3 +4,4 @@ pluggy==1.6.0
 Pygments==2.20.0
 pytest==9.0.2
 python-dotenv==1.2.2
+cryptography==46.0.4

@@ -1,6 +1,7 @@
 """Точка запуска учебного защищенного приложения."""
 
 from app.config import load_settings
+from app.crypto_fields import load_data_key
 
 
 def build_startup_message(app_name: str, app_env: str) -> str:
@@ -12,6 +13,7 @@ def build_startup_message(app_name: str, app_env: str) -> str:
 def main() -> None:
     """Запустить приложение."""
 
+    load_data_key()
     settings = load_settings()
     message = build_startup_message(
         app_name=settings.app_name,

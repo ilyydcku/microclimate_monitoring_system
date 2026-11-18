@@ -30,3 +30,8 @@ private_data/
 # Системные файлы
 .DS_Store
 Thumbs.db
+
+# Ключи практической работы № 9 (дополнительная защита)
+*.pem
+*.key
+data-key.hex

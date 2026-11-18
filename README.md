@@ -227,3 +227,28 @@ SQLite-файл, после их `initialize()` выполняется
 .\.venv\Scripts\python.exe demo_v08.py
 .\.venv\Scripts\python.exe -m pytest -q
 ```
+
+## Версия v0.9
+
+Практическая работа № 9: криптографическая защита данных и управление секретами.
+
+- AES-256-GCM для `requests.private_note`; AAD связывает формат, ключ, поле и ID заявки.
+- `ProtectedRequestService` расширяет существующий `AccessService`, не меняя матрицу v0.8.
+- Ключ `PR9_DATA_KEY_HEX` загружается из окружения при запуске, хранится вне Git.
+- `experiment_pr9.py`: серии A и B (45 наблюдений), профиль П1.
+- `cert_pr9.py`: четыре локальных опыта с OpenSSL 3.
+- `demo_v09.py`: создание и разрешенное чтение после отдельного запуска.
+- `docs/pr9-secrets.md`: схема хранения и план ротации lab-k1 -> lab-k2.
+
+Запуск из корня проекта в Windows PowerShell (OpenSSL 3 должен быть в PATH):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\run_pr9.ps1
+```
+
+Скрипт сохраняет синтетический протокол в `docs/pr9-evidence`, а ключи и
+учебную БД — в отдельном личном каталоге вне Git. При повторном запуске
+предыдущий протокол сохраняется вне рабочего дерева. `APP_SECRET_KEY` остается
+отдельным секретом приложения. Автоматическая ротация ключей не реализуется.
