@@ -1,0 +1,18 @@
+﻿Observations: 45
+A0 | equal | 3/3 (rows=3)
+A1 | different | 3/3 (rows=3)
+A2 | equal | 3/3 (rows=3)
+A3 | accepted | 3/3 (rows=3)
+A4 | rejected | 3/3 (rows=3)
+B0 | restored | 5/5 (rows=5)
+B1 | rejected | 5/5 (rows=5)
+B2 | rejected | 5/5 (rows=5)
+B3 | rejected | 5/5 (rows=5)
+B4 | rejected | 5/5 (rows=5)
+B5 | rejected | 5/5 (rows=5)
+Distinct nonces: 5/5
+B0 trial 1 | UTF-8=35 | measured=94 | calculated=94
+B0 trial 2 | UTF-8=35 | measured=94 | calculated=94
+B0 trial 3 | UTF-8=35 | measured=94 | calculated=94
+B0 trial 4 | UTF-8=35 | measured=94 | calculated=94
+B0 trial 5 | UTF-8=35 | measured=94 | calculated=94

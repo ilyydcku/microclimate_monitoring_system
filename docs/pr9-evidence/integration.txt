@@ -1,0 +1,25 @@
+﻿Process 1: create
+Startup: OK (AES-256 key format)
+Request ID: 1
+Stored field: v1.lab-k1.oA0TJjTnKXnNc/MsMqOOhwMMencQtmoOzs5hroUipZKlbG7Zyw0zdcwMf7ExYAakQwfECvfg1q/aMMIux1Qj
+Plaintext absent from stored field: True
+Process 2: read after restart
+Startup: OK (AES-256 key format)
+Owner after restart: True
+Foreign user denied: True
+Operator reads: True
+Admin denied: True
+Specialist denied: True
+Process 3: missing key
+Startup rejected: PR9_DATA_KEY_HEX: требуется ключ из 32 байтов в hex
+Exit: 2
+Process 4: malformed key
+Startup rejected: PR9_DATA_KEY_HEX: требуется ключ из 32 байтов в hex
+Exit: 2
+Process 5: restored key, authorized read
+Startup: OK (AES-256 key format)
+Owner after restart: True
+Foreign user denied: True
+Operator reads: True
+Admin denied: True
+Specialist denied: True

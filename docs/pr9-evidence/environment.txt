@@ -1,0 +1,7 @@
+﻿Python 3.14.0
+cryptography 46.0.4
+git version 2.52.0.windows.1
+OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)
+AES key: set (value not displayed)
+Key file ACL:
+DESKTOP-O3SPSJE\123 Allow  FullControl

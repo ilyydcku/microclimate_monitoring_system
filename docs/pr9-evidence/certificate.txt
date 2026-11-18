@@ -1,0 +1,26 @@
+﻿OpenSSL 3.5.4 30 Sep 2025 (Library: OpenSSL 3.5.4 30 Sep 2025)
+subject=CN=PR9 local certificate
+issuer=CN=PR9 local certificate
+notBefore=Nov 18 19:10:19 2026 GMT
+notAfter=Nov 20 19:10:19 2026 GMT
+sha256 Fingerprint=A2:86:F9:E2:D5:B9:9E:8F:5E:33:24:41:BC:B3:11:C0:A2:E5:40:C3:9A:4E:BE:4C:77:E9:F4:77:4A:A4:E2:45
+X509v3 Subject Alternative Name: 
+    DNS:app.lab.test
+
+C0 | exit=0
+lab-cert.pem: OK
+
+C1 | exit=2
+CN=PR9 local certificate
+error 62 at 0 depth lookup: hostname mismatch
+error lab-cert.pem: verification failed
+
+C2 | exit=2
+CN=PR9 local certificate
+error 18 at 0 depth lookup: self-signed certificate
+error lab-cert.pem: verification failed
+
+C3 | exit=2
+CN=PR9 local certificate
+error 10 at 0 depth lookup: certificate has expired
+error lab-cert.pem: verification failed
