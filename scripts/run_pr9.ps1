@@ -31,7 +31,14 @@ $acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($si
 Set-Acl -LiteralPath $pr9Dir -AclObject $acl
 $pr9KeyFile = Join-Path $pr9Dir 'data-key.hex'
 if (-not (Test-Path -LiteralPath $pr9KeyFile)) {
-    & $python -c 'from pathlib import Path; from secrets import token_hex; import sys; f=Path(sys.argv[1]).open("x", encoding="ascii"); f.write(token_hex(32)); f.close()' $pr9KeyFile
+    @'
+from pathlib import Path
+from secrets import token_hex
+import sys
+
+with Path(sys.argv[1]).open("x", encoding="ascii") as output:
+    output.write(token_hex(32))
+'@ | & $python - $pr9KeyFile
     if ($LASTEXITCODE -ne 0) { throw 'Key creation failed.' }
 }
 $keyAcl = Get-Acl -LiteralPath $pr9KeyFile
@@ -62,7 +69,7 @@ function Invoke-CheckedPython([string[]]$arguments) {
 }
 
 Write-Host '=== 1. Environment and key access ==='
-$versions = @(& $python --version; & $python -c 'import cryptography; print("cryptography", cryptography.__version__)'; git --version; openssl version)
+$versions = @(& $python --version; & $python -c "import cryptography; print('cryptography', cryptography.__version__)"; git --version; openssl version)
 if ($LASTEXITCODE -ne 0) { throw 'OpenSSL 3 is required.' }
 $versions += @('AES key: set (value not displayed)', 'Key file ACL:', (Get-Acl -LiteralPath $pr9KeyFile).AccessToString)
 Save-Result 'environment.txt' $versions
